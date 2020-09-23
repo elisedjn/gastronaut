@@ -19,12 +19,6 @@ body{
   background-size: cover;
 }
 
-#reservation .one-day{
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
 #big-buttons {
   display: flex;
   flex-direction: column;
