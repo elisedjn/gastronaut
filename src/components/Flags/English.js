@@ -22,7 +22,7 @@ const English = () => {
           id="Gruppe_maskieren_13"
           data-name="Gruppe maskieren 13"
           transform="translate(-33)"
-          clip-path="url(#clip-path)"
+          clipPath="url(#clip-path)"
         >
           <rect
             id="Rechteck_247"
