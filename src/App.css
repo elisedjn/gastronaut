@@ -105,6 +105,15 @@ body{
   text-align: center;
 }
 
+#reservation .divider{
+  height: 10px;
+  border-bottom: 1px solid #4d4c4c;
+}
+
+#reservation .one-event td{
+  padding-top: 10px;
+}
+
 #big-buttons {
   display: flex;
   flex-direction: column;

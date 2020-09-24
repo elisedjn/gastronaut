@@ -51,7 +51,7 @@ To deal with the dates and opening hours, I have created :
     // (the date is modified to be in format "Fri. the 24.09.20")
   ] 
   ```
-
+Have fun! :) 
 
 
 

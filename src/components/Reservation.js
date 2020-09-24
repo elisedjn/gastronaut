@@ -37,16 +37,7 @@ export default function Reservation({restaurantID, restaurant, languageInfos}) {
 
   console.log(openInfos)
 
-  let upcomingEvents = [{
-    id: 1,
-    date: '2020-12-04', // dates will always be in this format YYYY-MM-DD
-    title: 'Test Event',
-    status: 'BOOKABLE', // Can be either BOOKABLE or CLOSED if Close print closed;
-    priceStartingAt: 69, // Only available when BOOKABLE you may display this (from 69€)
-    currency: 'eur', // Only available when BOOKABLE
-    available: true, // Only available when BOOKABLE if available show ticket button
-    link: 'https://www.gastronaut.ai' // Link just for Testing
-  }]
+  let upcomingEvents = []
   events.forEach(oneEvent => {
     if(oneEvent.date > openInfos[6].formatedDate) upcomingEvents.push(JSON.parse(JSON.stringify(oneEvent)))
   })
@@ -84,12 +75,12 @@ export default function Reservation({restaurantID, restaurant, languageInfos}) {
           )
         })}
         {
-          upcomingEvents.length > 0 ? <div>---</div> : ""
+          upcomingEvents.length > 0 ? <td colSpan="3" className="divider"></td> : ""
         }
         {
           upcomingEvents.map((oneEvent, index) => {
             return (
-            <tr>
+            <tr className="one-event">
               <td className="date">{oneEvent.date}</td>
               {oneEvent.available ? (
                 <>
