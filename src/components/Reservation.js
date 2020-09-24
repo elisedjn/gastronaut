@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import Button from '@material-ui/core/Button'
 
 export default function Reservation({restaurantID, restaurant, languageInfos}) {
   const {regularHours, events} = restaurant
@@ -7,59 +8,99 @@ export default function Reservation({restaurantID, restaurant, languageInfos}) {
   const now = new Date()
   const today = now.getUTCDay()
 
-  //Creating an array with the dates ordered from today
-  const daysArr = [[date.today], [date.tomorrow]]
-  date.weekdays.forEach((day, index) => {
-    if(index - today > 1) {
-      daysArr[index-today] = [day]
-    } else if (index - today < 0) {
-      if(7 + (index-today) > 1) daysArr[7 + (index-today)] = [day]
-    }
-  })
-  //Adding the date in format DD.MM.YY to the first string and in format YYYY.MM.DD
-  for (let i=0; i < daysArr.length; i++){
-    let thisDayDate = new Date(Date.now() + i * 24 * 60 * 60 * 1000)
-    daysArr[i].push(toFormatedDate(thisDayDate))
-    if(i>1)daysArr[i][0] += toPrintedDate(thisDayDate)
+  //Creating an array with the name of the days and the opening hours ordered from today
+  const openInfos = []
+  for (let i = 0; i < 7; i++){
+    let index ;
+    i - today >=0 ? index = i - today : index = 7 + (i-today)
+    openInfos[index] = {daysDate: date.weekdays[i], hours: regularHours[i] || closed}
+    if(index === 0) openInfos[index].daysDate = date.today;
+    if(index === 1) openInfos[index].daysDate = date.tomorrow;
+    openInfos[index].hours === closed ? openInfos[index].bookable = false : openInfos[index].bookable = true
   }
-  
-  //Creating an array with opening hours (or closed) ordered from today
-  const hoursArr = []
-  regularHours.forEach((dailyHours, index) => {
-    (index - today >=0) ? hoursArr[index - today] = dailyHours || closed : hoursArr[7 + (index-today)] = dailyHours || closed
-  })
 
-  //checking if there is an event
-  daysArr.forEach((day, i) => {
-    events.forEach(oneEvent => {
-      if(day.includes(oneEvent.date)){
-        hoursArr[i] = oneEvent.title
+  // Adding to this info the dates in format DD.MM and YYYY.MM.DD and checking for event in this 7 days
+  openInfos.forEach((day, i) => {
+    let thisDayDate = new Date(Date.now() + i * 24 * 60 * 60 * 1000)
+    // Adding format YYYY.MM.DD
+    day.formatedDate = toFormatedDate(thisDayDate)
+    // Checking for event
+    events.forEach (oneEvent => {
+      if(oneEvent.date === day.formatedDate) {
+        day.event = JSON.parse(JSON.stringify(oneEvent))
+        day.bookable = false
       }
     })
+    // Adding format DD.MM to the day name
+    if(i > 1) day.daysDate += toPrintedDate(thisDayDate)
   })
-  
 
-  
- 
+  let upcomingEvents = [{
+    id: 1,
+    date: '2020-12-04', // dates will always be in this format YYYY-MM-DD
+    title: 'Test Event',
+    status: 'BOOKABLE', // Can be either BOOKABLE or CLOSED if Close print closed;
+    priceStartingAt: 69, // Only available when BOOKABLE you may display this (from 69€)
+    currency: 'eur', // Only available when BOOKABLE
+    available: true, // Only available when BOOKABLE if available show ticket button
+    link: 'https://www.gastronaut.ai' // Link just for Testing
+  }]
+  events.forEach(oneEvent => {
+    if(oneEvent.date > openInfos[6].formatedDate) upcomingEvents.push(JSON.parse(JSON.stringify(oneEvent)))
+  })
+  // Changing the date format
+  upcomingEvents.forEach((oneEvent) => {
+    let newDate = new Date(oneEvent.date)
+    let day = newDate.getUTCDay()
+    oneEvent.date = date.weekdays[day] + toPrintedDate(newDate) + "." + newDate.getUTCFullYear().toString().slice(-2)
+  })
 
   return (
       <table id="reservation">
         <tbody>
-        {daysArr.map((day, index) => {
+        {openInfos.map((day, index) => {
           return (
             <tr key={'reservation' + index}>
-              <td>{day[0]}</td> 
+              <td className="date">{day.daysDate}</td> 
               {
-                hoursArr[index].includes(":")? (
+                day.bookable ? (
                   <>
-                    <td>{hoursArr[index]}</td>
-                    <td><a href={`https://r.gastronaut.ai/${restaurantID}?date=${day[1]}`}>{reservationButtonSmall}</a></td>
+                    <td className="hours">{day.hours}</td>
+                    <td className="button"><a href={`https://r.gastronaut.ai/${restaurantID}?date=${day.formatedDate}`}><Button variant="outlined" color="primary" className="smallLetter" >{reservationButtonSmall}</Button></a></td>
                   </>
-                  ) : <td colSpan="2">{hoursArr[index]}</td>
+                  ) : day.event ? 
+                        day.event.available ? (
+                        <>
+                        <td className="hours">{day.event.title}</td>
+                        <td className="button"><a href={`https://t.gastronaut.ai/${restaurantID}/${day.event.id}`}><Button variant="contained" color="primary" className="smallLetter" >{ticketButton}</Button></a></td>
+                      </>
+                      ) 
+                      : <td colSpan="2">{day.event.title}</td> 
+                  : <td className="hours">{day.hours}</td>
               }
             </tr>
           )
         })}
+        {
+          upcomingEvents.length > 0 ? <div>---</div> : ""
+        }
+        {
+          upcomingEvents.map((oneEvent, index) => {
+            return (
+            <tr>
+              <td className="date">{oneEvent.date}</td>
+              {oneEvent.available ? (
+                <>
+                <td className="hours">{oneEvent.title}</td>
+                <td className="button"><a href={`https://t.gastronaut.ai/${restaurantID}/${oneEvent.id}`}><Button variant="contained" color="primary" className="smallLetter" >{ticketButton}</Button></a></td>
+                </>
+                ) : <td colSpan="2">{oneEvent.title}</td>
+                } 
+              
+            </tr>
+            )
+          })
+        }
         </tbody>
       </table>
   )
@@ -68,8 +109,7 @@ export default function Reservation({restaurantID, restaurant, languageInfos}) {
 const toPrintedDate = (oneDate) => {
   const day = oneDate.getUTCDate()
   const month = oneDate.getUTCMonth() + 1
-  const year = oneDate.getUTCFullYear()
-  const fullDate =  " " + ("0" + day).slice(-2) + "." + ("0" + month).slice(-2) + "." + year.toString().slice(-2)
+  const fullDate =  " " + ("0" + day).slice(-2) + "." + ("0" + month).slice(-2)
   return fullDate
 }
 

@@ -7,8 +7,9 @@ import Reservation from './components/Reservation';
 import BigButtons from './components/BigButtons';
 
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { Button, CircularProgress } from '@material-ui/core';
+import {Alert, AlertTitle} from '@material-ui/lab';
 import './App.css';
-
 
 
 
@@ -34,9 +35,16 @@ function App(props) {
       primary: {
         main: restaurantTheme.primaryColor,
         contrastText: restaurantTheme.contrastText
+      },
+      secondary: {
+        main: '#FFF',
+        contrastText: '#63d8c5'
       }
     }
   });
+
+  //Define the boolean to show the alert
+  const [showAlert, setShowAlert] = useState(false)
 
   
   useEffect(() => {
@@ -45,7 +53,7 @@ function App(props) {
         setRestaurant(response.data)
         setRestaurantTheme(response.data.colorPalette)
       })
-      .catch(err => console.log(err))
+      .catch(err => setShowAlert(true))
   }, [restaurantID])
 
   useEffect(() => {
@@ -53,15 +61,30 @@ function App(props) {
       .then(result => {
         setLanguageInfos(result.data)
       })
-      .catch(err => console.log(err))
+      .catch(err => setShowAlert(true))
   }, [language])
 
 
   return (
     <ThemeProvider theme={theme}>
+      <div id="app">
+      {
+        showAlert ? 
+        <div id="alert-page">
+          <Alert severity="info" id="alert" variant="filled" > 
+            <AlertTitle >Oops... {languageInfos.restaurantNotFound}...</AlertTitle>
+            <div className="alert-infos">
+              <p>Restaurants</p>
+              <a href="/neo-heidelberg"><Button variant="contained" color="secondary" >Neo-heidelberg</Button></a>
+              <a href="/schillingroofbar"><Button variant="contained" color="secondary" >Schilling</Button></a>
+            </div>
+          </Alert> 
+        </div>
+          : ""
+      }
       {
         Object.keys(languageInfos).length === 0 || Object.keys(restaurant).length === 0 ?
-        <div>Loading</div> : 
+        <div id="loading"><CircularProgress /></div> : 
       <>
       <Header restaurant = {restaurant} language= {language} setlanguage={setLanguage} />
       <Reservation restaurantID = {restaurantID} restaurant = {restaurant} languageInfos = {languageInfos} />
@@ -69,6 +92,7 @@ function App(props) {
       </>
       }
       <Footer />
+      </div>
     </ThemeProvider>
   );
 }
