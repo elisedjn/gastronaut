@@ -35,6 +35,8 @@ export default function Reservation({restaurantID, restaurant, languageInfos}) {
     if(i > 1) day.daysDate += toPrintedDate(thisDayDate)
   })
 
+  console.log(openInfos)
+
   let upcomingEvents = [{
     id: 1,
     date: '2020-12-04', // dates will always be in this format YYYY-MM-DD
