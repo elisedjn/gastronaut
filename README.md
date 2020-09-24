@@ -45,10 +45,12 @@ To deal with the dates and opening hours, I have created :
       event: {object} // clone of the event which will occur that day
   }
   ]
-  
+
   upcomingEvents : [
-    {object} // clone of the event which will occur in more than 6 days (the date is modified to be in format "Fri. the 24.09.20")
-  ] ```
+    {object} // clone of the event which will occur in more than 6 days 
+    // (the date is modified to be in format "Fri. the 24.09.20")
+  ] 
+  ```
 
 
 
