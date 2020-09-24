@@ -35,7 +35,8 @@ To deal with the dates and opening hours, I have created :
   - toPrintedDate(date) => return a date in format DD.MM (I've skipped the year for the upcoming days, I hope user will know which year we are...)
 
 - 2 Arrays of Objects:
-  - `openInfos : [ //Every object represents one day of the upcoming week, it is stored ordered from today to +6 days.
+  ``` javascript 
+  openInfos : [ //Every object represents one day of the upcoming week, it is stored ordered from today to +6 days.
     {
       daysDate: string, // in format "Fri. the 24.09" or "Today" or "Tomorrow"
       hours: string, //in format "17:00 - 00:00" or "Closed"
@@ -43,10 +44,11 @@ To deal with the dates and opening hours, I have created :
       bookable: boolean, // true if the restaurant is open and without event, else false
       event: {object} // clone of the event which will occur that day
   }
-  ]`
-  - `upcomingEvents : [
-    {object} // clone of the event which will occur in more than 6 days (the date is modified to be in format "Fri. the 24.09.20")
   ]
+  
+  upcomingEvents : [
+    {object} // clone of the event which will occur in more than 6 days (the date is modified to be in format "Fri. the 24.09.20")
+  ] ```
 
 
 
